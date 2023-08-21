@@ -1,53 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
 import _ from "lodash";
 
-export default function TikTakToe() {
-    const [playerName, setPlayerName] = useState("");
-    const [roomId, setRoomId] = useState(null);
+const API_URL = process.env.REACT_APP_API_URL;
+const socket = io(API_URL);
+
+const TikTakToe = () => {
+    const { state } = useLocation();
+    const { id, name, session } = state;
+
+    const [playerName, setPlayerName] = useState(name);
+    const [roomId, setRoomId] = useState(id);
     const [errorMessage, setErrorMessage] = useState("");
-    const [sessionInfo, setSessionInfo] = useState(null);
+    const [sessionInfo, setSessionInfo] = useState(session);
     const [board, setBoard] = useState(Array(9).fill(null));
     const [isNext, setisNext] = useState(false);
     const [move, setMove] = useState("");
     const [movesMade, setMovesMade] = useState(0);
 
-    const API_URL = process.env.REACT_APP_API_URL;
-    const { state } = useLocation();
-    const { id, name, session } = state;
-    // console.log(session);
-
     useEffect(() => {
-        setSessionInfo(session);
-        setRoomId(id);
-        setPlayerName(name);
-        console.log("haaaaaaaaaaaaa");
         socket.emit("setSessionInfo", { roomId, session });
     }, []);
 
-    const socket = io(API_URL);
+    useEffect(() => {
+        socket.on("updateBoard", handleUpdateBoard);
+        socket.on("sessionInfo", handleSessionInfo);
+        socket.on("returnSessionInfo", handleReturnSessionInfo);
 
-    const playGame = () => {
-        console.log("play");
-        console.log(board);
+        return () => {
+            socket.off("updateBoard", handleUpdateBoard);
+            socket.off("sessionInfo", handleSessionInfo);
+            socket.off("returnSessionInfo", handleReturnSessionInfo);
+        };
+    }, []);
+    //
 
-        socket.emit("getSessionInfo", { roomId });
-        socket.on("returnSessionInfo", (session) => {
-            console.log("returnSessionInfo");
-            console.log("returnSessionInfo", session);
-            console.log("session.players.length", session.players.length);
-            if (session.players.length > 1) {
-                setSessionInfo(session);
+    console.log("movesMade", movesMade);
+
+    console.log("isNext", isNext);
+
+    //
+    useEffect(() => {
+        if (sessionInfo && movesMade === 0) {
+            const playerIndex = sessionInfo.players.indexOf(playerName);
+            console.log("sessionInfouseEffect", playerIndex);
+
+            if (playerIndex !== -1) {
+                setMove(playerIndex === 0 ? "X" : "O");
+                setisNext(playerIndex === 0);
+                socket.emit("updateBoard", { roomId, board });
             }
-        });
+        }
+
+        if (sessionInfo && sessionInfo.players.length < 2) {
+            console.log("player Disconnected");
+        }
+    }, [sessionInfo]);
+
+    useEffect(() => {
+        const filledSquares = board.filter((square) => square !== null).length;
+        setMovesMade(filledSquares);
+    }, [board]);
+
+    useEffect(() => {
+        const playerIndex = sessionInfo.players.indexOf(playerName);
+        if (movesMade % 2 === (playerIndex === 0 ? 0 : 1)) {
+            setisNext(true);
+        } else {
+            setisNext(false);
+        }
+    }, [movesMade, sessionInfo, playerName]);
+
+    const handleUpdateBoard = (updatedBoard) => {
+        if (_.toString(updatedBoard).length !== _.toString(board).length) {
+            setBoard(updatedBoard);
+        }
+    };
+
+    const handleSessionInfo = (receivedSession) => {
+        setSessionInfo(receivedSession);
+    };
+
+    const handleReturnSessionInfo = (receivedSession) => {
+        if (receivedSession.players.length > 1) {
+            setSessionInfo(receivedSession);
+        }
     };
 
     const handleClick = (index) => {
         if (winner) {
             setBoard(Array(9).fill(null));
             setMovesMade(0);
-            window.location.reload();
             return;
         }
         if (board[index] || !isNext) {
@@ -57,10 +101,18 @@ export default function TikTakToe() {
         const newBoard = [...board];
         newBoard[index] = isNext ? move : null;
         setBoard(newBoard);
-        // console.log("newBoard", newBoard);
         socket.emit("updateBoard", { roomId, board: newBoard });
+    };
 
-        // playGame();
+    const renderSquare = (index) => {
+        return (
+            <button
+                className="w-1/3 bg-slate-800 px-2 pb-4  text-white relative aspect-square border-none text-8xl sm:text-9xl font-semibold flex items-center text-center justify-center"
+                onClick={() => handleClick(index)}
+            >
+                {board[index]}
+            </button>
+        );
     };
 
     const winningCombinations = [
@@ -92,121 +144,6 @@ export default function TikTakToe() {
     const winner = calculateWinner(board);
 
     // console.log(winner);
-
-    useEffect(() => {
-        console.log("sessionInfoUpdate");
-        if (sessionInfo && movesMade === 0) {
-            if (sessionInfo.players[0] === playerName) {
-                setMove("X");
-                setisNext(true);
-            } else if (sessionInfo.players[1] === playerName) {
-                setMove("O");
-                setisNext(false);
-            }
-            console.log("updateBoard");
-            if (sessionInfo) socket.emit("updateBoard", { roomId, board });
-        }
-
-        console.log("sessionInfo", sessionInfo);
-        if (sessionInfo) {
-            if (sessionInfo.players.length < 2) {
-                console.log("player Disconnected");
-            }
-        }
-
-        socket.on("updateBoard", (updatedBoard) => {
-            if (_.toString(updatedBoard).length !== _.toString(board).length) {
-                // console.log("useEffectUpdate");
-                // console.log(updatedBoard, board);
-                // console.log("isNext", isNext);
-                setBoard(updatedBoard);
-            }
-        });
-        socket.emit("setSessionInfo", { roomId, sessionInfo });
-    }, [sessionInfo]);
-
-    useEffect(() => {
-        const length = _.toString(board).length;
-        setMovesMade((44 - length) / 3);
-        // console.log("setmoves");
-        // console.log("movesMade", movesMade);
-        // console.log("isNext", isNext);
-    }, [board]);
-
-    useEffect(() => {
-        if (movesMade % 2 === 0) {
-            if (move === "X") {
-                console.log("setXtrue=======");
-                setisNext(true);
-            } else if (move === "O") {
-                setisNext(false);
-            }
-        } else if (movesMade % 2 === 1) {
-            if (move === "O") {
-                console.log("setOtrue=======");
-                setisNext(true);
-            } else if (move === "X") {
-                setisNext(false);
-            }
-        }
-    }, [movesMade]);
-
-    useEffect(() => {
-        socket.on("updateBoard", (updatedBoard) => {
-            console.log("useEffectUpdate");
-            setBoard(updatedBoard);
-            if (updatedBoard !== board) {
-                setBoard(updatedBoard);
-                // setMovesMade(movesMade + 1);
-            }
-        });
-
-        // socket.on("gameSessionCreated", (session) => {
-        //     console.log("gameSessionCreated", session.id);
-        //     setRoomId(session.id);
-        //     setErrorMessage("");
-        // });
-
-        // socket.on("playerJoined", (session) => {
-        //     console.log("playerJoined", session.id);
-        //     setRoomId(session.id);
-        //     setErrorMessage("");
-        // });
-
-        socket.on("roomFull", () => {
-            setErrorMessage("Room is already full");
-        });
-
-        socket.on("game started", () => {
-            console.log("play");
-        });
-
-        socket.on("sessionInfo", (session) => {
-            console.log("players sessionInfo", session.players);
-            setSessionInfo(session);
-        });
-
-        socket.on("returnSessionInfo", (session) => {
-            console.log("returnSessionInfo");
-            console.log("returnSessionInfo", session);
-            if (session.players.length > 1) {
-                setSessionInfo(session);
-            }
-        });
-    }, []);
-
-    const renderSquare = (index) => {
-        return (
-            <button
-                className="w-1/3 bg-slate-800 px-2 pb-4  text-white relative aspect-square border-none text-8xl sm:text-9xl font-semibold flex items-center text-center justify-center"
-                onClick={() => handleClick(index)}
-            >
-                {board[index]}
-            </button>
-        );
-    };
-
-    // console.log("movesMade", movesMade);
 
     return (
         <div className="flex flex-col w-screen h-screen text-center items-center  justify-center bg-slate-800 text-white text-2xl">
@@ -257,4 +194,6 @@ export default function TikTakToe() {
             </div>
         </div>
     );
-}
+};
+
+export default TikTakToe;
