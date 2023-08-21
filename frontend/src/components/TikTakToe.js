@@ -135,7 +135,7 @@ const TikTakToe = () => {
         }
         const filledSquares = _.filter(board, (square) => square !== null).length;
         if (filledSquares === 9) {
-            return "tie"; // It's a tie
+            return "tie";
         }
 
         return null;
