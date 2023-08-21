@@ -7,7 +7,7 @@ function App() {
     return (
         <Routes>
             <Route exact path="/" component={Home} />
-            <Route path="/snake-game" component={TikTakToe} />
+            <Route path="/tiktaktoe" component={TikTakToe} />
         </Routes>
     );
 }

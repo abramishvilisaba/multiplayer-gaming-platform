@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 // const socketIo = require("socket.io/client-dist");
 const apiURL = process.env.REACT_APP_API_URL || "http://localhost:3000";
-const socket = io(process.env.REACT_APP_API_URL);
+const socket = io(apiURL);
 console.log(apiURL);
 const Home = () => {
     const navigate = useNavigate();
