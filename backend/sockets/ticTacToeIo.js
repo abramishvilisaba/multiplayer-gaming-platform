@@ -24,7 +24,7 @@ const gameSessions = {};
 const activeGameSessions = [];
 module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
-        console.log("A user connected to game");
+        // console.log("A user connected to game");
 
         socket.on("setSessionInfo", ({ roomId, session }) => {
             socket.join(roomId);

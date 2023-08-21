@@ -7,65 +7,77 @@ const socket = io(apiURL);
 
 const Home = () => {
     const navigate = useNavigate();
-
     const [playerName, setPlayerName] = useState("");
     const [roomId, setRoomId] = useState(null);
     const [session, setSession] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-    console.log(session);
 
     useEffect(() => {
-        socket.on("gameSessionCreated", handleGameSessionCreated);
-        socket.on("playerJoined", handlePlayerJoined);
-        socket.on("returnSessionInfo", handleReturnSessionInfo);
-        socket.on("playerAlreadyJoined", handlePlayerAlreadyJoined);
+        socket.on("gameSessionCreated", handleSocketEvent("gameSessionCreated"));
+        socket.on("playerJoined", handleSocketEvent("playerJoined"));
+        socket.on("returnSessionInfo", handleSocketEvent("returnSessionInfo"));
+        socket.on("playerAlreadyJoined", handleSocketEvent("playerAlreadyJoined"));
 
         return () => {
-            socket.off("gameSessionCreated", handleGameSessionCreated);
-            socket.off("playerJoined", handlePlayerJoined);
-            socket.off("returnSessionInfo", handleReturnSessionInfo);
-            socket.off("playerAlreadyJoined", handlePlayerAlreadyJoined);
+            socket.off("gameSessionCreated", handleSocketEvent("gameSessionCreated"));
+            socket.off("playerJoined", handleSocketEvent("playerJoined"));
+            socket.off("returnSessionInfo", handleSocketEvent("returnSessionInfo"));
+            socket.off("playerAlreadyJoined", handleSocketEvent("playerAlreadyJoined"));
         };
     }, []);
 
-    const handleGameSessionCreated = (session) => {
-        console.log("gameSessionCreated", session.id);
-        setRoomId(session.id);
-        setErrorMessage("");
-    };
-
-    const handlePlayerJoined = (session) => {
-        let id = session.id;
-        console.log("playerJoined", session.id);
-        setRoomId(session.id);
-        socket.emit("getSessionInfo", { roomId: id });
-        setErrorMessage("");
-    };
-
-    const handleReturnSessionInfo = (session) => {
-        console.log("returnSessionInfo", session);
-        setSession(session);
-    };
-
-    const handlePlayerAlreadyJoined = (session) => {
-        console.log("playerAlreadyJoined", session);
-        setErrorMessage("playerAlreadyJoined");
-    };
-
-    const createOrJoinGame = () => {
-        console.log("createOrJoinGame");
-        if (roomId === null && playerName.length > 0) {
-            socket.emit("createOrJoinGame", { playerName });
+    const handleSocketEvent = (eventName) => (data) => {
+        switch (eventName) {
+            case "gameSessionCreated":
+                console.log("gameSessionCreated", data.id);
+                setRoomId(data.id);
+                setErrorMessage("");
+                break;
+            case "playerJoined":
+                console.log("playerJoined", data.id);
+                setRoomId(data.id);
+                socket.emit("getSessionInfo", { roomId: data.id });
+                setErrorMessage("");
+                break;
+            case "returnSessionInfo":
+                console.log("returnSessionInfo", data);
+                setSession(data);
+                break;
+            case "playerAlreadyJoined":
+                console.log("playerAlreadyJoined", data);
+                setErrorMessage("playerAlreadyJoined");
+                break;
+            default:
+                break;
         }
     };
 
+    //
+
+    console.log("roomId", roomId);
+    console.log("session", session);
+
+    //
+
     useEffect(() => {
+        console.log("seessionUpdate");
+        console.log(session);
         if (session && session.players.length > 1) {
             navigate("/tiktaktoe", {
                 state: { id: roomId, name: playerName, session: session },
             });
         }
     }, [session]);
+
+    const createOrJoinGame = () => {
+        console.log("createOrJoinGame");
+        if (roomId === null && playerName.length > 0) {
+            socket.emit("createOrJoinGame", { playerName });
+            if (roomId) {
+                socket.emit("getSessionInfo", { roomId });
+            }
+        }
+    };
 
     const inputStyles = "border rounded py-1 px-2";
     const buttonStyles = "bg-blue-500 text-white py-1 px-3 rounded";

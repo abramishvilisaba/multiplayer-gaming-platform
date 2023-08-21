@@ -66,20 +66,6 @@ module.exports = (io) => {
             }
         });
 
-        // socket.on("updateBoard", ({ roomId, board }) => {
-        //     console.log(roomId);
-        //     console.log(board);
-        //     socket.join(roomId);
-        //     console.log("updateBoard", board);
-        //     if (gameSessions[roomId] !== board) {
-        //         if (board !== undefined) {
-        //             gameSessions[roomId].board = board;
-        //             io.sockets.in(roomId).emit("updateBoard", board);
-        //             // socket.to(roomId).emit("updateBoard", board);
-        //         }
-        //     }
-        // });
-
         function emitSessionInfoToRoom(roomId, session) {
             io.to(roomId).emit("sessionInfo", session);
         }
@@ -107,8 +93,4 @@ module.exports = (io) => {
             return _.times(length, () => _.sample(characters)).join("");
         }
     });
-
-    // server.listen(PORT, () => {
-    //     console.log(`Server is running on port ${PORT}`);
-    // });
 };
