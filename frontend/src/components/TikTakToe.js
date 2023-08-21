@@ -30,6 +30,7 @@ export default function TikTakToe() {
     const playGame = () => {
         console.log("play");
         console.log(board);
+
         socket.emit("getSessionInfo", { roomId });
         socket.on("returnSessionInfo", (session) => {
             console.log("returnSessionInfo");
@@ -55,8 +56,8 @@ export default function TikTakToe() {
 
         const newBoard = [...board];
         newBoard[index] = isNext ? move : null;
-
         setBoard(newBoard);
+        console.log("newBoard", newBoard);
         socket.emit("updateBoard", { roomId, board: newBoard });
 
         // playGame();
@@ -86,6 +87,7 @@ export default function TikTakToe() {
     const winner = calculateWinner(board);
 
     useEffect(() => {
+        console.log("sessionInfoUpdate");
         if (sessionInfo && movesMade === 0) {
             if (sessionInfo.players[0] === playerName) {
                 setMove("X");
@@ -106,6 +108,7 @@ export default function TikTakToe() {
                 setBoard(updatedBoard);
             }
         });
+        socket.emit("setSessionInfo", { roomId, sessionInfo });
     }, [sessionInfo]);
 
     useEffect(() => {
@@ -145,17 +148,17 @@ export default function TikTakToe() {
             }
         });
 
-        socket.on("gameSessionCreated", (session) => {
-            console.log("gameSessionCreated", session.id);
-            setRoomId(session.id);
-            setErrorMessage("");
-        });
+        // socket.on("gameSessionCreated", (session) => {
+        //     console.log("gameSessionCreated", session.id);
+        //     setRoomId(session.id);
+        //     setErrorMessage("");
+        // });
 
-        socket.on("playerJoined", (session) => {
-            console.log("playerJoined", session.id);
-            setRoomId(session.id);
-            setErrorMessage("");
-        });
+        // socket.on("playerJoined", (session) => {
+        //     console.log("playerJoined", session.id);
+        //     setRoomId(session.id);
+        //     setErrorMessage("");
+        // });
 
         socket.on("roomFull", () => {
             setErrorMessage("Room is already full");

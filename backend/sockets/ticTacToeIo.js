@@ -1,11 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const http = require("http");
-
 const cors = require("cors");
 const _ = require("lodash");
 const socketIo = require("socket.io");
-
 require("dotenv").config();
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
@@ -18,7 +16,6 @@ const io = socketIo(server, {
     },
 });
 
-// app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 
@@ -50,8 +47,11 @@ module.exports = (io) => {
         socket.on("setSessionInfo", ({ roomId, session }) => {
             socket.join(roomId);
 
+            console.log("setSessionInfo", session);
+
             if (session) {
-                gameSessions[roomId] = session;
+                gameSessions[session.id] = session;
+                console.log("gameSessions", gameSessions);
             }
         });
 
@@ -73,7 +73,7 @@ module.exports = (io) => {
                     }
                 }
             } catch (error) {
-                console.log("error");
+                console.log("error", error);
             }
         });
 

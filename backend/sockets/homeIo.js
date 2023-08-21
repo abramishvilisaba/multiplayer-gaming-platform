@@ -6,21 +6,21 @@ const cors = require("cors");
 const _ = require("lodash");
 const socketIo = require("socket.io");
 
-// require("dotenv").config();
+require("dotenv").config();
 
-// const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
-// const PORT = process.env.PORT || 3001;
-// console.log(ALLOWED_ORIGIN);
-// const app = express();
-// const server = http.createServer(app);
-// const io = socketIo(server, {
-//     cors: {
-//         origin: ALLOWED_ORIGIN,
-//     },
-// });
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
+const PORT = process.env.PORT || 3001;
+console.log(ALLOWED_ORIGIN);
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: ALLOWED_ORIGIN,
+    },
+});
 
-// app.use(cors());
-// app.use(express.json());
+app.use(cors());
+app.use(express.json());
 
 const gameSessions = {};
 
