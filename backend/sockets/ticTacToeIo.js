@@ -77,31 +77,15 @@ module.exports = (io) => {
             }
         });
 
-        function emitSessionInfoToRoom(roomId, session) {
-            io.to(roomId).emit("sessionInfo", session);
-        }
-
-        function createNewSession(playerName) {
-            const roomId = generateRandomRoomId();
-            const session = {
-                id: roomId,
-                players: [playerName],
-            };
-            gameSessions[roomId] = session;
-            gameSessions[roomId].board = [];
-            return session;
-        }
-
-        function findSessionWithOnePlayer() {
-            return _.find(gameSessions, (session) => session.players.length === 1);
-        }
-
         function generateRandomRoomId() {
             // console.log("generateRandomRoomId");
             const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             const length = 6; // You can adjust the length of the room name here
             return _.times(length, () => _.sample(characters)).join("");
         }
+        // socket.on("disconnect", () => {
+        //     console.log(playerName, existingSession);
+        // });
     });
 
     // server.listen(PORT, () => {

@@ -16,7 +16,7 @@ export default function TikTakToe() {
     const API_URL = process.env.REACT_APP_API_URL;
     const { state } = useLocation();
     const { id, name, session } = state;
-    console.log(session);
+    // console.log(session);
 
     useEffect(() => {
         setSessionInfo(session);
@@ -44,12 +44,11 @@ export default function TikTakToe() {
 
     const handleClick = (index) => {
         if (winner) {
-            console.log("winnnnnnnnnn");
             setBoard(Array(9).fill(null));
             setMovesMade(0);
+            window.location.reload();
             return;
         }
-        console.log("isNext", isNext);
         if (board[index] || !isNext) {
             return;
         }
@@ -57,7 +56,7 @@ export default function TikTakToe() {
         const newBoard = [...board];
         newBoard[index] = isNext ? move : null;
         setBoard(newBoard);
-        console.log("newBoard", newBoard);
+        // console.log("newBoard", newBoard);
         socket.emit("updateBoard", { roomId, board: newBoard });
 
         // playGame();
@@ -81,10 +80,17 @@ export default function TikTakToe() {
                 return board[a];
             }
         }
+        const filledSquares = _.filter(board, (square) => square !== null).length;
+        if (filledSquares === 9) {
+            return "tie"; // It's a tie
+        }
+
         return null;
     };
 
     const winner = calculateWinner(board);
+
+    // console.log(winner);
 
     useEffect(() => {
         console.log("sessionInfoUpdate");
@@ -100,11 +106,18 @@ export default function TikTakToe() {
             if (sessionInfo) socket.emit("updateBoard", { roomId, board });
         }
 
+        console.log("sessionInfo", sessionInfo);
+        if (sessionInfo) {
+            if (sessionInfo.players.length < 2) {
+                console.log("player Disconnected");
+            }
+        }
+
         socket.on("updateBoard", (updatedBoard) => {
             if (_.toString(updatedBoard).length !== _.toString(board).length) {
-                console.log("useEffectUpdate");
-                console.log(updatedBoard, board);
-                console.log("isNext", isNext);
+                // console.log("useEffectUpdate");
+                // console.log(updatedBoard, board);
+                // console.log("isNext", isNext);
                 setBoard(updatedBoard);
             }
         });
@@ -113,11 +126,10 @@ export default function TikTakToe() {
 
     useEffect(() => {
         const length = _.toString(board).length;
-        console.log(board, length);
         setMovesMade((44 - length) / 3);
-        console.log("setmoves");
-        console.log("movesMade", movesMade);
-        console.log("isNext", isNext);
+        // console.log("setmoves");
+        // console.log("movesMade", movesMade);
+        // console.log("isNext", isNext);
     }, [board]);
 
     useEffect(() => {
@@ -169,7 +181,7 @@ export default function TikTakToe() {
         });
 
         socket.on("sessionInfo", (session) => {
-            console.log("players", session.players);
+            console.log("players sessionInfo", session.players);
             setSessionInfo(session);
         });
 
@@ -193,7 +205,7 @@ export default function TikTakToe() {
         );
     };
 
-    console.log("movesMade", movesMade);
+    // console.log("movesMade", movesMade);
 
     return (
         <div className="flex flex-col w-screen h-screen text-center items-center  justify-center bg-slate-800 text-white text-2xl">
@@ -204,8 +216,10 @@ export default function TikTakToe() {
                         <p className="mb-4">
                             {winner !== null
                                 ? move === winner
-                                    ? "You Win"
-                                    : "Opponent Wins"
+                                    ? "You Win!"
+                                    : winner === "tie"
+                                    ? "Tie!"
+                                    : "Opponent Wins!"
                                 : isNext
                                 ? "Your Turn "
                                 : "Opponents Turn"}

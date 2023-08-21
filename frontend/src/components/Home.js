@@ -6,6 +6,7 @@ import io from "socket.io-client";
 const apiURL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 const socket = io(apiURL);
 console.log(apiURL);
+
 const Home = () => {
     const navigate = useNavigate();
 
@@ -14,27 +15,6 @@ const Home = () => {
     const [session, setSession] = useState(null);
     const [players, setPlayers] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
-
-    // const createGameSession = async () => {
-    //     try {
-    //         if (playerName) {
-    //             navigate("/tiktaktoe", { state: { id: sessionId, name: playerName } });
-    //         }
-    //     } catch (error) {
-    //         console.error("Error creating game session:", error);
-    //     }
-    // };
-
-    // const joinGameSession = async () => {
-    //     try {
-    //         const response = await axios.post(`${apiURL}/joinGameSession`, {
-    //             sessionId,
-    //             playerName,
-    //         });
-    //     } catch (error) {
-    //         console.error("Error joining game session:", error);
-    //     }
-    // };
 
     const createOrJoinGame = () => {
         console.log("createOrJoinGame");

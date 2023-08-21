@@ -88,6 +88,7 @@ module.exports = (io) => {
             const session = {
                 id: roomId,
                 players: [playerName],
+                playerSockets: [],
             };
             gameSessions[roomId] = session;
             gameSessions[roomId].board = [];
