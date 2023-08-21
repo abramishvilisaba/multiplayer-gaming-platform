@@ -35,7 +35,9 @@ export default function TikTakToe() {
             console.log("returnSessionInfo");
             console.log("returnSessionInfo", session);
             console.log("session.players.length", session.players.length);
-            session.players.length > 1 ? setSessionInfo(session) : null;
+            if (session.players.length > 1) {
+                setSessionInfo(session);
+            }
         });
     };
 
@@ -171,14 +173,16 @@ export default function TikTakToe() {
         socket.on("returnSessionInfo", (session) => {
             console.log("returnSessionInfo");
             console.log("returnSessionInfo", session);
-            session.players.length > 1 ? setSessionInfo(session) : null;
+            if (session.players.length > 1) {
+                setSessionInfo(session);
+            }
         });
     }, []);
 
     const renderSquare = (index) => {
         return (
             <button
-                className="w-1/3 bg-slate-800  text-white relative aspect-square border-none text-9xl font-semibold flex items-center text-center justify-center"
+                className="w-1/3 bg-slate-800 px-2 pb-4  text-white relative aspect-square border-none text-8xl sm:text-9xl font-semibold flex items-center text-center justify-center"
                 onClick={() => handleClick(index)}
             >
                 {board[index]}
