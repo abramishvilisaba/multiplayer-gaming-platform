@@ -24,25 +24,7 @@ const gameSessions = {};
 const activeGameSessions = [];
 module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
-        console.log("A user connected");
-
-        // socket.on("createOrJoinGame", ({ playerName }) => {
-        //     const existingSession = findSessionWithOnePlayer();
-        //     console.log(existingSession);
-
-        //     if (existingSession) {
-        //         existingSession.players.push(playerName);
-        //         socket.join(existingSession.id);
-        //         console.log("playerJoined", existingSession.id);
-        //         io.to(existingSession.id).emit("playerJoined", existingSession);
-        //         // socket.emit("playerJoined", existingSession);
-        //     } else {
-        //         const newSession = createNewSession(playerName);
-        //         socket.join(newSession.id);
-        //         console.log("gameSessionCreated", newSession);
-        //         socket.emit("gameSessionCreated", newSession);
-        //     }
-        // });
+        console.log("A user connected to game");
 
         socket.on("setSessionInfo", ({ roomId, session }) => {
             socket.join(roomId);
@@ -77,18 +59,8 @@ module.exports = (io) => {
             }
         });
 
-        function generateRandomRoomId() {
-            // console.log("generateRandomRoomId");
-            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            const length = 6; // You can adjust the length of the room name here
-            return _.times(length, () => _.sample(characters)).join("");
-        }
         // socket.on("disconnect", () => {
         //     console.log(playerName, existingSession);
         // });
     });
-
-    // server.listen(PORT, () => {
-    //     console.log(`Server is running on port ${PORT}`);
-    // });
 };

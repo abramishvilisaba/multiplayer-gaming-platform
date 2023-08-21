@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import axios
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-// const socketIo = require("socket.io/client-dist");
+
 const apiURL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 const socket = io(apiURL);
-console.log(apiURL);
 
 const Home = () => {
     const navigate = useNavigate();
@@ -13,50 +11,61 @@ const Home = () => {
     const [playerName, setPlayerName] = useState("");
     const [roomId, setRoomId] = useState(null);
     const [session, setSession] = useState(null);
-    const [players, setPlayers] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
+    console.log(session);
+
+    useEffect(() => {
+        socket.on("gameSessionCreated", handleGameSessionCreated);
+        socket.on("playerJoined", handlePlayerJoined);
+        socket.on("returnSessionInfo", handleReturnSessionInfo);
+        socket.on("playerAlreadyJoined", handlePlayerAlreadyJoined);
+
+        return () => {
+            socket.off("gameSessionCreated", handleGameSessionCreated);
+            socket.off("playerJoined", handlePlayerJoined);
+            socket.off("returnSessionInfo", handleReturnSessionInfo);
+            socket.off("playerAlreadyJoined", handlePlayerAlreadyJoined);
+        };
+    }, []);
+
+    const handleGameSessionCreated = (session) => {
+        console.log("gameSessionCreated", session.id);
+        setRoomId(session.id);
+        setErrorMessage("");
+    };
+
+    const handlePlayerJoined = (session) => {
+        let id = session.id;
+        console.log("playerJoined", session.id);
+        setRoomId(session.id);
+        socket.emit("getSessionInfo", { roomId: id });
+        setErrorMessage("");
+    };
+
+    const handleReturnSessionInfo = (session) => {
+        console.log("returnSessionInfo", session);
+        setSession(session);
+    };
+
+    const handlePlayerAlreadyJoined = (session) => {
+        console.log("playerAlreadyJoined", session);
+        setErrorMessage("playerAlreadyJoined");
+    };
 
     const createOrJoinGame = () => {
         console.log("createOrJoinGame");
         if (roomId === null && playerName.length > 0) {
             socket.emit("createOrJoinGame", { playerName });
-            // setRoomId(1);
         }
-        socket.on("gameSessionCreated", (session) => {
-            console.log("gameSessionCreated", session.id);
-            setRoomId(session.id);
-            setErrorMessage("");
-        });
-        socket.on("playerJoined", (session) => {
-            console.log("playerJoined", session.id);
-            setRoomId(session.id);
-            socket.emit("getSessionInfo", { roomId });
-            setErrorMessage("");
-        });
-        socket.emit("getSessionInfo", { roomId });
-        socket.on("returnSessionInfo", (session) => {
-            console.log("playerJoined", session);
-            setSession(session);
-            console.log(session);
-        });
     };
-    console.log("session", session);
+
     useEffect(() => {
-        if (!session) {
-            socket.emit("getSessionInfo", { roomId });
+        if (session && session.players.length > 1) {
+            navigate("/tiktaktoe", {
+                state: { id: roomId, name: playerName, session: session },
+            });
         }
-        if (session) {
-            if (session.players.length > 1) {
-                navigate("/tiktaktoe", {
-                    state: { id: roomId, name: playerName, session: session },
-                });
-            }
-        }
-        socket.on("playerAlreadyJoined", (session) => {
-            console.log("playerAlreadyJoined", session);
-            setErrorMessage("playerAlreadyJoined");
-        });
-    }, [roomId, session]);
+    }, [session]);
 
     const inputStyles = "border rounded py-1 px-2";
     const buttonStyles = "bg-blue-500 text-white py-1 px-3 rounded";

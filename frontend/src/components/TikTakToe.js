@@ -22,6 +22,7 @@ export default function TikTakToe() {
         setSessionInfo(session);
         setRoomId(id);
         setPlayerName(name);
+        console.log("haaaaaaaaaaaaa");
         socket.emit("setSessionInfo", { roomId, session });
     }, []);
 

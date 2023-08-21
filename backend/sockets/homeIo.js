@@ -27,7 +27,7 @@ const gameSessions = {};
 const activeGameSessions = [];
 module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
-        console.log("A user connected");
+        console.log("A user connected to home");
 
         socket.on("createOrJoinGame", ({ playerName }) => {
             const existingSession = findSessionWithOnePlayer();
@@ -53,10 +53,11 @@ module.exports = (io) => {
         });
 
         socket.on("getSessionInfo", ({ roomId }) => {
+            console.log("getroomid", roomId);
             const session = gameSessions[roomId];
             socket.join(roomId);
             console.log(gameSessions);
-            // console.log("getSessionInfo", session);
+            console.log("getSessionInfo", session);
             // console.log(roomId);
 
             if (session) {
