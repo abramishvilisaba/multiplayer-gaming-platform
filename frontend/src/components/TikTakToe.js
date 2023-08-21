@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
 import _ from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const socket = io(API_URL);
@@ -19,6 +20,8 @@ const TikTakToe = () => {
     const [move, setMove] = useState("");
     const [movesMade, setMovesMade] = useState(0);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         socket.emit("setSessionInfo", { roomId, session });
     }, []);
@@ -27,11 +30,18 @@ const TikTakToe = () => {
         socket.on("updateBoard", handleUpdateBoard);
         socket.on("sessionInfo", handleSessionInfo);
         socket.on("returnSessionInfo", handleReturnSessionInfo);
+        socket.on("disconnectUsers", handleDisconnectUsers);
+        socket.on("updateSessionRequest", () => {
+            console.log("Received update session request");
+            socket.emit("updateSessionInfo", { roomId, playerName });
+        });
 
         return () => {
             socket.off("updateBoard", handleUpdateBoard);
             socket.off("sessionInfo", handleSessionInfo);
             socket.off("returnSessionInfo", handleReturnSessionInfo);
+            socket.off("disconnectUsers", handleDisconnectUsers);
+            socket.off("updateSessionRequest", handleReturnSessionInfo);
         };
     }, []);
     //
@@ -54,13 +64,24 @@ const TikTakToe = () => {
         }
 
         if (sessionInfo && sessionInfo.players.length < 2) {
-            console.log("player Disconnected");
+            console.log("player disconnected");
+            // handleDisconnectUsers();
         }
     }, [sessionInfo]);
 
     useEffect(() => {
         const filledSquares = board.filter((square) => square !== null).length;
         setMovesMade(filledSquares);
+    }, [board]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            socket.emit("Usertimeout", { roomId });
+            console.log("State was not updated in 20 seconds");
+            alert("User Inactive");
+            navigate("/");
+        }, 20000);
+        return () => clearTimeout(timer);
     }, [board]);
 
     useEffect(() => {
@@ -80,6 +101,11 @@ const TikTakToe = () => {
 
     const handleSessionInfo = (receivedSession) => {
         setSessionInfo(receivedSession);
+    };
+
+    const handleDisconnectUsers = () => {
+        alert("Opponent Disconnected!");
+        navigate("/");
     };
 
     const handleReturnSessionInfo = (receivedSession) => {

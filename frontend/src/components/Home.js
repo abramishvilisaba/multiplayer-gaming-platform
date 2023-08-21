@@ -78,6 +78,17 @@ const Home = () => {
             }
         }
     };
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === "Enter" && playerName.length > 0) {
+                createOrJoinGame();
+            }
+        };
+        window.addEventListener("keydown", handleKeyPress);
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [playerName]);
 
     const inputStyles = "border rounded py-1 px-2";
     const buttonStyles = "bg-blue-500 text-white py-1 px-3 rounded";

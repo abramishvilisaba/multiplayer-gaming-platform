@@ -30,6 +30,7 @@ module.exports = (io) => {
             socket.join(roomId);
 
             if (session) {
+                activeGameSessions.push(session);
                 gameSessions[session.id] = session;
             }
         });
@@ -42,7 +43,6 @@ module.exports = (io) => {
                         if (gameSessions[roomId].board) {
                             gameSessions[roomId].board = board;
                             io.sockets.in(roomId).emit("updateBoard", board);
-                            // socket.to(roomId).emit("updateBoard", board);
                         }
                     }
                 }
@@ -51,8 +51,56 @@ module.exports = (io) => {
             }
         });
 
-        // socket.on("disconnect", () => {
-        //     console.log(playerName, existingSession);
-        // });
+        socket.on("updateSessionInfo", ({ roomId, playerName }) => {
+            activeGameSessions.length = 0;
+
+            if (roomId && playerName) {
+                if (!activeGameSessions[roomId]) {
+                    activeGameSessions[roomId] = { players: [] };
+                }
+                if (!activeGameSessions[roomId].players.includes(playerName)) {
+                    activeGameSessions[roomId].players.push(playerName);
+                }
+                console.log("activeGameSessions", activeGameSessions);
+            }
+        });
+        socket.on("UserTimeout", ({ roomId }) => {
+            if (roomId) {
+                delete gameSessions[roomId];
+            }
+        });
+
+        const SessionUpdateRequest = () => {
+            _.forEach(gameSessions, (session, sessionId) => {
+                io.to(sessionId).emit("updateSessionRequest");
+            });
+            console.log("start ==========");
+            for (const sessionId in activeGameSessions) {
+                console.log("sessionIds---------", sessionId);
+                console.log(activeGameSessions[sessionId]);
+                if (activeGameSessions[sessionId].players.length < 2) {
+                    console.log("disconnectUsers", sessionId);
+                    io.to(sessionId).emit("disconnectUsers");
+                }
+            }
+        };
+
+        // const sessionUpdateTimer = setInterval(SessionUpdateRequest, 10000);
+        // sessionUpdateTimer;
+        socket.on("disconnect", () => {
+            // console.log("A user disconnected");
+            // activeGameSessions.length = 0;
+            // emitSessionUpdateRequest();
+            // gameSessions.forEach((sessionId) => {
+            //     const session = gameSessions[sessionId];
+            //     session.players = session.players.filter((player) => player.socketId !== socket.id);
+            //     if (session.players.length === 1) {
+            //         delete gameSessions[sessionId];
+            //         _.remove(activeGameSessions, sessionId);
+            //         console.log("sessionId--------------", sessionId);
+            //         io.to(sessionId).emit("disconnectUsers");
+            //     }
+            // });
+        });
     });
 };

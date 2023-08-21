@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const http = require("http");
-
+const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 const _ = require("lodash");
 const socketIo = require("socket.io");
@@ -28,6 +28,7 @@ const activeGameSessions = [];
 module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
         console.log("A user connected to home");
+        console.log(gameSessions);
 
         socket.on("createOrJoinGame", ({ playerName }) => {
             const existingSession = findSessionWithOnePlayer();
@@ -62,7 +63,8 @@ module.exports = (io) => {
         }
 
         function createNewSession(playerName) {
-            const roomId = generateRandomRoomId();
+            // const roomId = generateRandomRoomId();
+            const roomId = uuidv4();
             const session = {
                 id: roomId,
                 players: [playerName],
