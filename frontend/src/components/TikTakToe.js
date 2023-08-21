@@ -17,6 +17,7 @@ export default function TikTakToe() {
     const { state } = useLocation();
     const { id, name, session } = state;
     console.log(session);
+
     useEffect(() => {
         setSessionInfo(session);
         setRoomId(id);
@@ -39,11 +40,14 @@ export default function TikTakToe() {
     };
 
     const handleClick = (index) => {
-        // if (board[index] || calculateWinner(board)) {
-        //     return;
-        // }
+        if (winner) {
+            console.log("winnnnnnnnnn");
+            setBoard(Array(9).fill(null));
+            setMovesMade(0);
+            return;
+        }
         console.log("isNext", isNext);
-        if (board[index] || !isNext || winner) {
+        if (board[index] || !isNext) {
             return;
         }
 
@@ -54,17 +58,6 @@ export default function TikTakToe() {
         socket.emit("updateBoard", { roomId, board: newBoard });
 
         // playGame();
-    };
-
-    const renderSquare = (index) => {
-        return (
-            <button
-                className="w-16 h-16 bg-white border border-gray-300 text-2xl font-semibold flex items-center justify-center"
-                onClick={() => handleClick(index)}
-            >
-                {board[index]}
-            </button>
-        );
     };
 
     const winningCombinations = [
@@ -82,10 +75,10 @@ export default function TikTakToe() {
         for (const combination of winningCombinations) {
             const [a, b, c] = combination;
             if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return board[a]; // Return the winning player's symbol ("X" or "O")
+                return board[a];
             }
         }
-        return null; // No winner yet
+        return null;
     };
 
     const winner = calculateWinner(board);
@@ -102,6 +95,7 @@ export default function TikTakToe() {
             console.log("updateBoard");
             if (sessionInfo) socket.emit("updateBoard", { roomId, board });
         }
+
         socket.on("updateBoard", (updatedBoard) => {
             if (_.toString(updatedBoard).length !== _.toString(board).length) {
                 console.log("useEffectUpdate");
@@ -181,56 +175,64 @@ export default function TikTakToe() {
         });
     }, []);
 
+    const renderSquare = (index) => {
+        return (
+            <button
+                className="w-1/3 bg-slate-800  text-white relative aspect-square border-none text-9xl font-semibold flex items-center text-center justify-center"
+                onClick={() => handleClick(index)}
+            >
+                {board[index]}
+            </button>
+        );
+    };
+
     console.log("movesMade", movesMade);
 
     return (
-        <div className="flex flex-col w-screen h-screen text-center items-center  justify-center">
-            <div className="mb-4"></div>
-            {/* {roomId === null ? (
-                <button className="bg-emerald-700 px-8 py-2 rounded" onClick={createOrJoinGame}>
-                    join
-                </button>
-            ) : null}
-            {roomId ? (
-                <button className="bg-emerald-700 px-8 py-2 rounded" onClick={playGame}>
-                    play
-                </button>
-            ) : null} */}
-            {sessionInfo ? (
-                <div className="mx-auto max-w-md text-center mt-8">
-                    <div className="mb-4 font-semibold text-xl">{/* {status} */}</div>
-                    <p className="mb-4">
-                        {" "}
-                        {winner !== null ? "winner is : " + winner : null}
-                        {isNext ? "Your Turn " : null}
-                    </p>
-                    <div className="flex flex-col mb-4 gap-0">
-                        <div className="flex">
-                            {renderSquare(0)}
-                            {renderSquare(1)}
-                            {renderSquare(2)}
+        <div className="flex flex-col w-screen h-screen text-center items-center  justify-center bg-slate-800 text-white text-2xl">
+            <div className="flex content-center justify-center">
+                {sessionInfo ? (
+                    <div className="w-screen h-1/2 mx-auto max-w-md text-center ">
+                        <div className="mb-4 font-semibold text-xl">{/* {status} */}</div>
+                        <p className="mb-4">
+                            {winner !== null
+                                ? move === winner
+                                    ? "You Win"
+                                    : "Opponent Wins"
+                                : isNext
+                                ? "Your Turn "
+                                : "Opponents Turn"}
+                        </p>
+                        <p className="mb-16">
+                            {winner !== null ? "Click the table to restart" : null}
+                        </p>
+                        <div className="flex flex-col mb-8 gap-2 bg-white">
+                            <div className="flex gap-2  items-center text-center justify-center">
+                                {renderSquare(0)}
+                                {renderSquare(1)}
+                                {renderSquare(2)}
+                            </div>
+                            <div className="flex gap-2">
+                                {renderSquare(3)}
+                                {renderSquare(4)}
+                                {renderSquare(5)}
+                            </div>
+                            <div className="flex gap-2">
+                                {renderSquare(6)}
+                                {renderSquare(7)}
+                                {renderSquare(8)}
+                            </div>
                         </div>
-                        <div className="flex">
-                            {renderSquare(3)}
-                            {renderSquare(4)}
-                            {renderSquare(5)}
-                        </div>
-                        <div className="flex">
-                            {renderSquare(6)}
-                            {renderSquare(7)}
-                            {renderSquare(8)}
-                        </div>
+                        <p className="mb-8">
+                            {session.players
+                                ? session.players[0] + ": X " + session.players[1] + ": O "
+                                : null}
+                        </p>
                     </div>
-                    <p className="mb-4">
-                        {" "}
-                        {session.players
-                            ? session.players[0] + ": X " + "        " + session.players[1] + ": O "
-                            : null}
-                    </p>
-                </div>
-            ) : null}
+                ) : null}
 
-            {/*  */}
+                {/*  */}
+            </div>
         </div>
     );
 }
