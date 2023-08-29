@@ -11,6 +11,10 @@ Welcome to the Multiplayer Gaming Platform! This platform offers a real-time mul
 - **Game Termination**: Inactive users are automatically detected, and if a player remains inactive for too long, the game is terminated.
 - **Rematch Option**: After a game concludes, players have the option to play again against the same opponent.
 
+## Screenshot
+
+![Screenshot](./screenshot.jpg)
+
 ## Getting Started
 
 1. Clone this repository to your local machine.
