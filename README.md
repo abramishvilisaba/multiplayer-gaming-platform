@@ -35,6 +35,11 @@ Welcome to the Multiplayer Gaming Platform! This platform offers a real-time mul
 - User Profiles: Implement user profiles to track statistics, achievements, and game history.
 - Enhanced Termination Handling: Improve the user experience by providing clearer notifications about game termination due to inactivity.
 
+## Links
+
+- GitHub Repository: [github.com/abramishvilisaba/multiplayer-gaming-platform](https://github.com/abramishvilisaba/multiplayer-gaming-platform)
+- Live Demo: [multiplayer-gaming-platform-s4nw.onrender.com](https://multiplayer-gaming-platform-s4nw.onrender.com/)
+
 ## Contributing
 
 Contributions to this project are welcome! If you have ideas for enhancements or encounter issues, feel free to open an issue or submit a pull request.
@@ -42,11 +47,6 @@ Contributions to this project are welcome! If you have ideas for enhancements or
 ## License
 
 This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code for your purposes.
-
-## Links
-
-- GitHub Repository: [github.com/abramishvilisaba/multiplayer-gaming-platform](https://github.com/abramishvilisaba/multiplayer-gaming-platform)
-- Live Demo: [multiplayer-gaming-platform-s4nw.onrender.com](https://multiplayer-gaming-platform-s4nw.onrender.com/)
 
 ## Author
 
