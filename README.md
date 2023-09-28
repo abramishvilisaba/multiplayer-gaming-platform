@@ -2,6 +2,18 @@
 
 Welcome to the Multiplayer Gaming Platform! This platform offers a real-time multiplayer gaming experience, featuring classic Tic-Tac-Toe and Reversi games. Users can enter their names, wait for another player to join, and enjoy competitive gaming sessions. The platform supports multiple game sessions concurrently, providing a seamless experience for users to enjoy and compete with friends.
 
+## Table of Contents
+
+1. [Screenshots](#screenshots)
+2. [How to Use](#how-to-use)
+3. [Features](#features)
+4. [Technology Stack](#technology-stack)
+5. [Future Enhancements](#future-enhancements)
+6. [Links](#links)
+7. [Contributing](#contributing)
+8. [License](#license)
+9. [Author](#author)
+
 ## Screenshots
 
 ![Screenshot1](./screenshot.jpg)
@@ -10,8 +22,8 @@ Welcome to the Multiplayer Gaming Platform! This platform offers a real-time mul
 ## How to Use
 
 1. Open the platform in your browser and enter your Name.
-2. Either create a game session or join an existing game
-3. You can also test game all by yourself by opening the platform in a another window and joining from there.
+2. Either create a game session or join an existing game.
+3. You can also test the game all by yourself by opening the platform in another window and joining from there.
 4. Enjoy multiplayer Tic-Tac-Toe and Reversi with friends!
 
 ## Features
