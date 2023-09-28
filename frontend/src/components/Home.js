@@ -113,6 +113,7 @@ const Home = () => {
 
     const handleGameSelection = (game) => {
         setSelectedGame(game);
+        createOrJoinGame();
     };
 
     console.log(selectedGame);
@@ -150,10 +151,7 @@ const Home = () => {
                     onChange={(e) => setPlayerName(e.target.value)}
                 />
                 <Button
-                    onClick={() => {
-                        handleGameSelection("TicTacToe");
-                        createOrJoinGame;
-                    }}
+                    onClick={() => handleGameSelection("TicTacToe")}
                     variant="contained"
                     className={`${buttonStyles} ml-2`}
                 >
@@ -172,7 +170,6 @@ const Home = () => {
                     onClick={
                         () => {
                             handleGameSelection("Reversi");
-                            createOrJoinGame;
                         }
                         //  navigate("/Reversi");
                     }
@@ -181,10 +178,7 @@ const Home = () => {
                 >
                     Play Reversi
                 </Button>
-                {!roomId ? //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
-                // >
-                //     Create Game
-                // </Button>
+                {!roomId ? // </Button> //     Create Game // > //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
                 null : (
                     <Typography variant="h6" htmlFor="playerName" className="mr-2">
                         Waiting for another player to join
