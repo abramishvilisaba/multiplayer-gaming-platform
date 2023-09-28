@@ -26,7 +26,7 @@ module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
         console.log("A user connected to game");
 
-        socket.on("setSessionInfoTic", ({ roomId, session }) => {
+        socket.on("setSessionInfo", ({ roomId, session }) => {
             socket.join(roomId);
 
             if (session) {
@@ -39,12 +39,10 @@ module.exports = (io) => {
             try {
                 if (board) {
                     socket.join(roomId);
-                    if (gameSessions[roomId]) {
-                        if (gameSessions[roomId] !== board) {
-                            if (gameSessions[roomId].board) {
-                                gameSessions[roomId].board = board;
-                                io.sockets.in(roomId).emit("updateBoard", board);
-                            }
+                    if (gameSessions[roomId] !== board) {
+                        if (gameSessions[roomId].board) {
+                            gameSessions[roomId].board = board;
+                            io.sockets.in(roomId).emit("updateBoard", board);
                         }
                     }
                 }
@@ -87,22 +85,6 @@ module.exports = (io) => {
             }
         };
 
-        // const sessionUpdateTimer = setInterval(SessionUpdateRequest, 10000);
-        // sessionUpdateTimer;
-        socket.on("disconnect", () => {
-            // console.log("A user disconnected");
-            // activeGameSessions.length = 0;
-            // emitSessionUpdateRequest();
-            // gameSessions.forEach((sessionId) => {
-            //     const session = gameSessions[sessionId];
-            //     session.players = session.players.filter((player) => player.socketId !== socket.id);
-            //     if (session.players.length === 1) {
-            //         delete gameSessions[sessionId];
-            //         _.remove(activeGameSessions, sessionId);
-            //         console.log("sessionId--------------", sessionId);
-            //         io.to(sessionId).emit("disconnectUsers");
-            //     }
-            // });
-        });
+        socket.on("disconnect", () => {});
     });
 };

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const API_URL = process.env.REACT_APP_API_URL;
 const socket = io(API_URL);
 
-const TikTakToe = () => {
+const TicTacToe = () => {
     const { state } = useLocation();
     const { id, name, session } = state;
 
@@ -23,7 +23,7 @@ const TikTakToe = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        socket.emit("setSessionInfo", { roomId, session });
+        socket.emit("setSessionInfoTic", { roomId, session });
     }, []);
 
     useEffect(() => {
@@ -78,9 +78,9 @@ const TikTakToe = () => {
         const timer = setTimeout(() => {
             socket.emit("Usertimeout", { roomId });
             console.log("State was not updated in 20 seconds");
-            alert("User Inactive");
+            alert("Player was Inactive for too long");
             navigate("/");
-        }, 20000);
+        }, 30000);
         return () => clearTimeout(timer);
     }, [board]);
 
@@ -133,7 +133,7 @@ const TikTakToe = () => {
     const renderSquare = (index) => {
         return (
             <button
-                className="w-1/3 bg-slate-800 px-2 pb-4  text-white relative aspect-square border-none text-8xl sm:text-9xl font-semibold flex items-center text-center justify-center"
+                className="w-1/3 bg-slate-800 px-2 pb-4 font-sans  text-white relative aspect-square border-none text-8xl sm:text-9xl font-semibold flex items-center text-center justify-center"
                 onClick={() => handleClick(index)}
             >
                 {board[index]}
@@ -142,14 +142,14 @@ const TikTakToe = () => {
     };
 
     const winningCombinations = [
-        [0, 1, 2], // Top row
-        [3, 4, 5], // Middle row
-        [6, 7, 8], // Bottom row
-        [0, 3, 6], // Left column
-        [1, 4, 7], // Middle column
-        [2, 5, 8], // Right column
-        [0, 4, 8], // Diagonal from top-left to bottom-right
-        [2, 4, 6], // Diagonal from top-right to bottom-left
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
     ];
 
     const calculateWinner = (board) => {
@@ -215,11 +215,9 @@ const TikTakToe = () => {
                         </p>
                     </div>
                 ) : null}
-
-                {/*  */}
             </div>
         </div>
     );
 };
 
-export default TikTakToe;
+export default TicTacToe;

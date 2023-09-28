@@ -23,6 +23,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+require("./sockets/reversi")(io);
 require("./sockets/ticTacToeIo")(io);
 require("./sockets/homeIo")(io);
 
