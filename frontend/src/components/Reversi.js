@@ -272,19 +272,28 @@ export default function Reversi() {
                 width: "100%",
                 paddingTop: "6vh",
                 paddingBottom: "32vh",
-                backgroundColor: "slategray",
+                backgroundColor: "#1E293B",
             }}
         >
-            <Typography variant="h5" style={{ marginBottom: 24, marginTop: 12 }}>
+            <Typography
+                variant="h5"
+                style={{ marginBottom: 24, marginTop: 12, color: "white", fontSize: "32px" }}
+            >
                 Reversi Game
             </Typography>
 
             {countBlackPieces(board) + countWhitePieces(board) === 64 ? (
-                <div className="turn" style={{ marginBottom: 12, fontSize: "22px" }}>
+                <div
+                    className="turn"
+                    style={{ marginBottom: 12, color: "white", fontSize: "36px" }}
+                >
                     Game Over
                 </div>
             ) : (
-                <div className="turn" style={{ marginBottom: 12 }}>
+                <div
+                    className="turn"
+                    style={{ marginBottom: 16, color: "white", fontSize: "22px" }}
+                >
                     {isNext ? "Your" : "Opponent's"} Turn
                 </div>
             )}
@@ -296,10 +305,16 @@ export default function Reversi() {
                     gap: "40px",
                 }}
             >
-                <div className="turn" style={{ marginBottom: 12 }}>
+                <div
+                    className="turn"
+                    style={{ marginBottom: 16, color: "white", fontSize: "20px" }}
+                >
                     black Pieces : {countBlackPieces(board)}
                 </div>
-                <div className="turn" style={{ marginBottom: 12 }}>
+                <div
+                    className="turn"
+                    style={{ marginBottom: 16, color: "white", fontSize: "20px" }}
+                >
                     white Pieces : {countWhitePieces(board)}
                 </div>
             </div>

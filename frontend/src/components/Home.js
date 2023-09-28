@@ -178,8 +178,7 @@ const Home = () => {
                 >
                     Play Reversi
                 </Button>
-                {!roomId ? // </Button> //     Create Game // > //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
-                null : (
+                {!roomId ? null : ( // </Button> //     Create Game // > //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
                     <Typography variant="h6" htmlFor="playerName" className="mr-2">
                         Waiting for another player to join
                     </Typography>
@@ -194,20 +193,23 @@ const Home = () => {
             ) : null}
             <div className="sessions-row">
                 {sessions
-                    ? sessions.map((session) => (
-                          <div key={session.id} className="session-card">
-                              <h2 className="text-xl font-semibold mb-2">Game Session</h2>
-                              <p className="mb-1">Game: {session.game}</p>
-                              <p className="mb-4">Players: {session.players.join(", ")}</p>
-                              <Button
-                                  onClick={() => joinTicTacToe(session.game, session)}
-                                  variant="contained"
-                                  className={`${buttonStyles} ml-2`}
-                              >
-                                  Join Game
-                              </Button>
-                          </div>
-                      ))
+                    ? sessions.map(
+                          (session) =>
+                              session.players.length < 2 && (
+                                  <div key={session.id} className="session-card">
+                                      <h2 className="text-xl font-semibold mb-2">Game Session</h2>
+                                      <p className="mb-1">Game: {session.game}</p>
+                                      <p className="mb-4">Players: {session.players.join(", ")}</p>
+                                      <Button
+                                          onClick={() => joinTicTacToe(session.game, session)}
+                                          variant="contained"
+                                          className={`${buttonStyles} ml-2`}
+                                      >
+                                          Join Game
+                                      </Button>
+                                  </div>
+                              )
+                      )
                     : null}
             </div>
         </div>
