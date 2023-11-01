@@ -52,7 +52,8 @@ console.log("gameSessions", gameSessions);
 
 module.exports = (io) => {
     io.sockets.on("connection", async (socket) => {
-        // console.log("A user connected  to home");
+        console.log("A user connected  to home");
+        socket.emit("connected");
         // console.log(gameSessions);
 
         socket.on("getSessions", () => {

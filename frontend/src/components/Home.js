@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography, CircularProgress } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/system";
 
 const apiURL = process.env.REACT_APP_API_URL || "http://localhost:3000";
@@ -13,6 +13,7 @@ const Home = () => {
     const [roomId, setRoomId] = useState(null);
     const [session, setSession] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         socket.on("gameSessionCreated", handleSocketEvent("gameSessionCreated"));
@@ -20,6 +21,7 @@ const Home = () => {
         socket.on("returnSessionInfo", handleSocketEvent("returnSessionInfo"));
         socket.on("playerAlreadyJoined", handleSocketEvent("playerAlreadyJoined"));
         socket.on("setSessions", handleSocketEvent("setSessions"));
+        socket.on("connected", handleSocketEvent("connected"));
 
         return () => {
             socket.off("gameSessionCreated", handleSocketEvent("gameSessionCreated"));
@@ -27,6 +29,7 @@ const Home = () => {
             socket.off("returnSessionInfo", handleSocketEvent("returnSessionInfo"));
             socket.off("playerAlreadyJoined", handleSocketEvent("playerAlreadyJoined"));
             socket.off("setSessions", handleSocketEvent("setSessions"));
+            socket.off("connected", handleSocketEvent("connected"));
         };
     }, []);
 
@@ -55,7 +58,10 @@ const Home = () => {
                 console.log("setSessions", data);
                 setSessions(Object.values(data));
                 break;
-
+            case "connected":
+                console.log("setConnected");
+                setConnected(true);
+                break;
             default:
                 break;
         }
@@ -135,29 +141,30 @@ const Home = () => {
             <Typography variant="h3" sx={{ mb: 20 }}>
                 Multiplayer Gaming Platform
             </Typography>
-            <div className="mb-4 flex flex-col gap-6 items-center">
-                {errorMessage}
-                <Typography variant="h5" htmlFor="playerName" className="mr-2">
-                    Enter your name:
-                </Typography>
-                <TextField
-                    type="text"
-                    id="playerName"
-                    variant="outlined"
-                    size="small"
-                    className={inputStyles}
-                    value={playerName}
-                    sx={{ mx: 1, width: "140px" }}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                />
-                <Button
-                    onClick={() => handleGameSelection("TicTacToe")}
-                    variant="contained"
-                    className={`${buttonStyles} ml-2`}
-                >
-                    Play Tic-Tac-Toe
-                </Button>
-                {/* <Button
+            {connected ? (
+                <div className="mb-4 flex flex-col gap-6 items-center">
+                    {errorMessage}
+                    <Typography variant="h5" htmlFor="playerName" className="mr-2">
+                        Enter your name:
+                    </Typography>
+                    <TextField
+                        type="text"
+                        id="playerName"
+                        variant="outlined"
+                        size="small"
+                        className={inputStyles}
+                        value={playerName}
+                        sx={{ mx: 1, width: "140px" }}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <Button
+                        onClick={() => handleGameSelection("TicTacToe")}
+                        variant="contained"
+                        className={`${buttonStyles} ml-2`}
+                    >
+                        Play Tic-Tac-Toe
+                    </Button>
+                    {/* <Button
                     onClick={() => {
                         handleGameSelection("Battleship"), navigate("/battleship");
                     }}
@@ -166,24 +173,27 @@ const Home = () => {
                 >
                     Play Battleship
                 </Button> */}
-                <Button
-                    onClick={
-                        () => {
-                            handleGameSelection("Reversi");
+                    <Button
+                        onClick={
+                            () => {
+                                handleGameSelection("Reversi");
+                            }
+                            //  navigate("/Reversi");
                         }
-                        //  navigate("/Reversi");
-                    }
-                    variant="contained"
-                    className={`${buttonStyles} ml-2`}
-                >
-                    Play Reversi
-                </Button>
-                {!roomId ? null : ( // </Button> //     Create Game // > //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
-                    <Typography variant="h6" htmlFor="playerName" className="mr-2">
-                        Waiting for another player to join
-                    </Typography>
-                )}
-            </div>
+                        variant="contained"
+                        className={`${buttonStyles} ml-2`}
+                    >
+                        Play Reversi
+                    </Button>
+                    {!roomId ? null : ( // </Button> //     Create Game // > //     className={`${buttonStyles} ml-2`} //     variant="contained" //     onClick={createOrJoinGame} // <Button
+                        <Typography variant="h6" htmlFor="playerName" className="mr-2">
+                            Waiting for another player to join
+                        </Typography>
+                    )}
+                </div>
+            ) : (
+                <CircularProgress sx={{ textAlign: "center" }} />
+            )}
             {session ? (
                 <div className="bg-white p-4 rounded shadow">
                     <h2 className="text-xl font-semibold mb-2">Game Session</h2>
